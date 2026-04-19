@@ -50,9 +50,6 @@ export default function ThemeProvider({ children }) {
 
   return (
     <div className="min-h-screen">
-      <div className="fixed right-4 top-4 z-50">
-        <ThemeToggle theme={theme} toggle={toggle} />
-      </div>
       {children}
     </div>
   );

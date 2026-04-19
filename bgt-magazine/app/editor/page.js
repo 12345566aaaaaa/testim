@@ -36,7 +36,7 @@ export default function EditorDashboard() {
 
   const [editingArticle, setEditingArticle] = useState(null);
   const [roleFilter, setRoleFilter] = useState('all');
-  const [newArticle, setNewArticle] = useState({ title: '', content: '', image_url: '', video_url: '' });
+  const [newArticle, setNewArticle] = useState({ title: '', content: '', category: 'Lajme', image_url: '', video_url: '' });
   const [uploading, setUploading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -138,10 +138,15 @@ export default function EditorDashboard() {
       const { data } = supabase.storage.from('media').getPublicUrl(filePath);
       
       if (isEditing) {
-        setEditingArticle({ ...editingArticle, image_url: data.publicUrl });
+        const currentUrl = type === 'images' ? (editingArticle.image_url || '') : (editingArticle.video_url || '');
+        if (type === 'images') {
+            setEditingArticle({ ...editingArticle, image_url: currentUrl ? `${currentUrl}, ${data.publicUrl}` : data.publicUrl });
+        } else {
+            setEditingArticle({ ...editingArticle, video_url: currentUrl ? `${currentUrl}, ${data.publicUrl}` : data.publicUrl });
+        }
       } else {
-        if (type === 'images') setNewArticle({ ...newArticle, image_url: data.publicUrl });
-        if (type === 'videos') setNewArticle({ ...newArticle, video_url: data.publicUrl });
+        if (type === 'images') setNewArticle(prev => ({ ...prev, image_url: prev.image_url ? `${prev.image_url}, ${data.publicUrl}` : data.publicUrl }));
+        if (type === 'videos') setNewArticle(prev => ({ ...prev, video_url: prev.video_url ? `${prev.video_url}, ${data.publicUrl}` : data.publicUrl }));
       }
       showToast("Media u ngarkua!");
     } catch (error) {
@@ -162,7 +167,7 @@ export default function EditorDashboard() {
 
     if (!error) {
       showToast("Lajmi u dërgua për miratim!");
-      setNewArticle({ title: '', content: '', image_url: '', video_url: '' });
+      setNewArticle({ title: '', content: '', category: 'Lajme', image_url: '', video_url: '' });
       fetchData();
       setActiveTab('articles');
     }
@@ -175,7 +180,9 @@ export default function EditorDashboard() {
       .update({
         title: editingArticle.title,
         content: editingArticle.content,
-        image_url: editingArticle.image_url
+        category: editingArticle.category,
+        image_url: editingArticle.image_url,
+        video_url: editingArticle.video_url
       })
       .eq('id', editingArticle.id);
 
@@ -337,14 +344,27 @@ export default function EditorDashboard() {
               </div>
               <form onSubmit={handleUpdateArticle} className="space-y-4">
                 <input required type="text" value={editingArticle.title} onChange={(e) => setEditingArticle({...editingArticle, title: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-[#1a5f7a] dark:text-slate-200" placeholder="Titulli..." />
-                <textarea required rows="8" value={editingArticle.content} onChange={(e) => setEditingArticle({...editingArticle, content: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a5f7a] dark:text-slate-300" placeholder="Përmbajtja..." />
-                <div className="flex items-center gap-4 p-4 border-2 border-dashed rounded-2xl bg-gray-50 dark:bg-slate-800 dark:border-slate-700">
-                    {editingArticle.image_url && <img src={editingArticle.image_url} className="w-20 h-20 object-cover rounded-xl" />}
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-gray-400 uppercase mb-1">Ndrysho Foton</span>
-                      <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'images', true)} className="text-xs" />
-                    </div>
+                <select value={editingArticle.category || 'Lajme'} onChange={(e) => setEditingArticle({...editingArticle, category: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-[#1a5f7a] dark:text-slate-200 cursor-pointer">
+                    <option value="Lajme">Lajme</option>
+                    <option value="Sukseset">Sukseset</option>
+                    <option value="Inovacioni">Inovacioni</option>
+                    <option value="Sporti">Sporti</option>
+                    <option value="Projektet">Projektet</option>
+                    <option value="Klubet">Klubet</option>
+                </select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400">Përditëso Foto (File / Linqe)</label>
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'images', true)} className="text-xs text-gray-400" />
+                    <textarea rows="2" value={editingArticle.image_url || ''} onChange={(e) => setEditingArticle({...editingArticle, image_url: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#1a5f7a] dark:text-slate-300 resize-none" placeholder="Linqet e fotove..."></textarea>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400">Përditëso Video (File / Linqe)</label>
+                    <input type="file" accept="video/*" onChange={(e) => handleFileUpload(e, 'videos', true)} className="text-xs text-gray-400" />
+                    <textarea rows="2" value={editingArticle.video_url || ''} onChange={(e) => setEditingArticle({...editingArticle, video_url: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#1a5f7a] dark:text-slate-300 resize-none" placeholder="Linqet e videove..."></textarea>
+                  </div>
                 </div>
+                <textarea required rows="8" value={editingArticle.content} onChange={(e) => setEditingArticle({...editingArticle, content: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a5f7a] dark:text-slate-300" placeholder="Përmbajtja..." />
                 <button type="submit" className="w-full py-4 bg-[#1a5f7a] text-white rounded-2xl font-black uppercase shadow-lg hover:bg-[#144d63] transition-all">Ruaj Ndryshimet</button>
               </form>
             </div>
@@ -356,18 +376,33 @@ export default function EditorDashboard() {
           <div className="max-w-4xl mx-auto text-left">
             <h2 className="text-3xl font-black mb-8 text-[#1e293b] dark:text-slate-200">Krijo Lajm të Ri</h2>
             <form onSubmit={handleSubmitArticle} className="space-y-6 bg-white dark:bg-slate-900 p-10 rounded-[40px] shadow-sm border border-gray-50 dark:border-slate-800">
-              <div>
-                <label className="block text-[10px] font-black uppercase text-gray-400 dark:text-slate-500 mb-2 tracking-widest">Titulli i Lajmit</label>
-                <input required type="text" value={newArticle.title} onChange={(e) => setNewArticle({...newArticle, title: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-[#1a5f7a] outline-none font-bold text-lg dark:text-slate-200" placeholder="Titulli..." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Foto</label>
-                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'images')} className="block w-full text-xs text-gray-500 cursor-pointer" />
+                  <label className="block text-[10px] font-black uppercase text-gray-400 dark:text-slate-500 mb-2 tracking-widest">Titulli i Lajmit</label>
+                  <input required type="text" value={newArticle.title} onChange={(e) => setNewArticle({...newArticle, title: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-[#1a5f7a] outline-none font-bold text-lg dark:text-slate-200" placeholder="Titulli..." />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Video</label>
-                  <input type="file" accept="video/*" onChange={(e) => handleFileUpload(e, 'videos')} className="block w-full text-xs text-gray-500 cursor-pointer" />
+                  <label className="block text-[10px] font-black uppercase text-gray-400 dark:text-slate-500 mb-2 tracking-widest">Kategoria</label>
+                  <select value={newArticle.category} onChange={(e) => setNewArticle({...newArticle, category: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-[#1a5f7a] outline-none font-bold text-lg dark:text-slate-200 cursor-pointer">
+                      <option value="Lajme">Lajme</option>
+                      <option value="Sukseset">Sukseset</option>
+                      <option value="Inovacioni">Inovacioni</option>
+                      <option value="Sporti">Sporti</option>
+                      <option value="Projektet">Projektet</option>
+                      <option value="Klubet">Klubet</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Foto (File ose Linqe ndarë me presje)</label>
+                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'images')} className="block w-full text-xs text-gray-500 cursor-pointer mb-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-[#1a5f7a]/10 file:text-[#1a5f7a]" />
+                  <textarea rows="2" value={newArticle.image_url} onChange={(e) => setNewArticle({...newArticle, image_url: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-[#1a5f7a] outline-none text-xs font-bold dark:text-slate-300 resize-none" placeholder="https://..."></textarea>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Video (File ose Linqe ndarë me presje)</label>
+                  <input type="file" accept="video/*" onChange={(e) => handleFileUpload(e, 'videos')} className="block w-full text-xs text-gray-500 cursor-pointer mb-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-[#1a5f7a]/10 file:text-[#1a5f7a]" />
+                  <textarea rows="2" value={newArticle.video_url} onChange={(e) => setNewArticle({...newArticle, video_url: e.target.value})} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-[#1a5f7a] outline-none text-xs font-bold dark:text-slate-300 resize-none" placeholder="https://youtube.com/..."></textarea>
                 </div>
               </div>
               <div>
@@ -434,7 +469,24 @@ export default function EditorDashboard() {
                         )}
                       </div>
                     </div>
-                    {selectedArticle.image_url && <div className="relative w-full h-64 mb-6 rounded-3xl overflow-hidden shadow-sm"><Image src={selectedArticle.image_url} alt="Cover" fill className="object-cover" /></div>}
+                    {selectedArticle.image_url && (
+                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {selectedArticle.image_url.split(',').filter(Boolean).map((img, idx) => (
+                          <div key={idx} className="relative w-full h-64 rounded-3xl overflow-hidden shadow-sm">
+                            <img src={img.trim()} alt={`Cover ${idx + 1}`} className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {selectedArticle.video_url && (
+                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {selectedArticle.video_url.split(',').filter(Boolean).map((vid, idx) => (
+                          <div key={idx} className="relative w-full h-64 rounded-3xl overflow-hidden shadow-sm">
+                            <video src={vid.trim()} controls className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <h1 className="text-3xl font-black mb-6 text-[#1a5f7a] dark:text-[#38bdf8] leading-tight">{selectedArticle.title}</h1>
                     <p className="text-gray-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">{selectedArticle.content}</p>
                   </div>
@@ -463,7 +515,7 @@ export default function EditorDashboard() {
                     </div>
                   </div>
                   <h3 className="font-bold text-[#1a5f7a] dark:text-[#38bdf8] text-lg mb-2">{art.title}</h3>
-                  {art.image_url && <div className="mt-auto relative w-full h-40 rounded-2xl overflow-hidden mb-2"><Image src={art.image_url} alt="Media" fill className="object-cover" /></div>}
+                  {art.image_url && <div className="mt-auto relative w-full h-40 rounded-2xl overflow-hidden mb-2"><img src={art.image_url.split(',')[0].trim()} alt="Media" className="w-full h-full object-cover" /></div>}
                   <p className="text-gray-400 dark:text-slate-500 text-[10px] font-bold">{new Date(art.created_at).toLocaleDateString()}</p>
                 </div>
               )) : <div className="col-span-2 py-20 text-center text-gray-300 dark:text-slate-700 font-bold uppercase text-sm">Asnjë rezultat</div>}

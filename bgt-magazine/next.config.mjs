@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: process.cwd(),
   images: {
     remotePatterns: [
       {
@@ -7,6 +8,14 @@ const nextConfig = {
         hostname: 'aezxnqgjcqowktbtsrtg.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },

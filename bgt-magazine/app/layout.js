@@ -1,49 +1,66 @@
-import ThemeProvider from "../components/ThemeProvider";
+import { Inter, Playfair_Display } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: '--font-inter',
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: '--font-playfair',
+});
+
+export const metadata = {
+  title: "BGT - Gazeta Online | Lajmi i Fundit",
+  description: "Portali juaj kryesor për lajme, ekonomi, sport dhe teknologji.",
+};
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="sq" suppressHydrationWarning>
+    <html lang="sq" className="scroll-smooth">
       <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script dangerouslySetInnerHTML={{ __html: `
-          tailwind.config = {
-            darkMode: 'class'
-          }
-        ` }} />
-        <style>{`
-          :root {
-            --bg: #f8fafc;
-            --text: #0f172a;
-          }
-          .dark {
-            --bg: #0f172a;
-            --text: #e6eef8;
-          }
-          body {
-            background-color: var(--bg);
-            color: var(--text);
-            transition: background-color 0.3s ease, color 0.3s ease;
-          }
-        `}</style>
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function(){
-            try {
-              var t = localStorage.getItem('theme');
-              if(!t){
-                var m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-                t = (m && m.matches) ? 'dark' : 'light';
-              }
-              if(t === 'dark'){
-                document.documentElement.classList.add('dark');
-              } else {
-                document.documentElement.classList.remove('dark');
-              }
-            } catch(e){}
-          })();
-        ` }} />
+        <link rel="icon" href="/logo-bgt.png" />
       </head>
-      <body className="antialiased m-0 p-0 min-h-screen font-sans">
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white text-[#0f172a] dark:bg-[#020617] dark:text-gray-100 transition-colors duration-300`}>
+        {children}
+        
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root {
+            --primary: #0f172a;
+            --accent: #ca8a04;
+            --bg-body: #ffffff;
+            --border-ui: #e2e8f0;
+            --navbar-h: 80px;
+          }
+
+          .dark {
+            --primary: #ffffff;
+            --accent: #fbbf24;
+            --bg-body: #020617;
+            --border-ui: #1e293b;
+          }
+
+          .serif { font-family: var(--font-playfair), serif; }
+          .sans { font-family: var(--font-inter), sans-serif; }
+
+          /* Premium News System (Telegrafi Layout) */
+          * { border-color: var(--border-ui); }
+          
+          /* Remove bubbly/glow effects */
+          .glass, .blur-bg, .bubble-shadow {
+            backdrop-filter: none !important;
+            background: none !important;
+            box-shadow: none !important;
+          }
+
+          h1, h2, h3, h4 { letter-spacing: -0.02em; }
+          
+          ::selection {
+            background: var(--accent);
+            color: #fff;
+          }
+        `}} />
       </body>
     </html>
   );
