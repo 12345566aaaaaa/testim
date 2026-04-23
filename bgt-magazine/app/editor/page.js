@@ -93,17 +93,33 @@ export default function EditorDashboard() {
   const filteredArticles = useMemo(() => {
     const baseList = activeTab === 'articles' ? articles : archive;
     return baseList.filter(art => {
-      const matchesTitle = art.title.toLowerCase().includes(searchFilters.title.toLowerCase());
-      const matchesAuthor = art.profiles?.full_name?.toLowerCase().includes(searchFilters.author.toLowerCase());
-      const matchesDate = searchFilters.date ? art.created_at.startsWith(searchFilters.date) : true;
+      // Titulli (Garda nëse mungon)
+      const title = art.title || "";
+      const matchesTitle = title.toLowerCase().includes(searchFilters.title.toLowerCase());
+      
+      // Autori (Trajtimi i objektit ose array-it nga join-i i Supabase)
+      let authorName = "";
+      if (art.profiles) {
+        if (Array.isArray(art.profiles)) {
+          authorName = art.profiles[0]?.full_name || "";
+        } else {
+          authorName = art.profiles.full_name || "";
+        }
+      }
+      const matchesAuthor = authorName.toLowerCase().includes(searchFilters.author.toLowerCase());
+      
+      // Data (Garda nëse mungon created_at)
+      const matchesDate = searchFilters.date ? (art.created_at || "").startsWith(searchFilters.date) : true;
+      
       return matchesTitle && matchesAuthor && matchesDate;
     });
   }, [articles, archive, activeTab, searchFilters]);
 
   const filteredMyArticles = useMemo(() => {
     return myArticles.filter(art => {
-      const matchesTitle = art.title.toLowerCase().includes(searchFilters.title.toLowerCase());
-      const matchesDate = searchFilters.date ? art.created_at.startsWith(searchFilters.date) : true;
+      const title = art.title || "";
+      const matchesTitle = title.toLowerCase().includes(searchFilters.title.toLowerCase());
+      const matchesDate = searchFilters.date ? (art.created_at || "").startsWith(searchFilters.date) : true;
       return matchesTitle && matchesDate;
     });
   }, [myArticles, searchFilters.title, searchFilters.date]);
