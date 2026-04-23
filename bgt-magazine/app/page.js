@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
 import NextImage from 'next/image';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import HeroNews from '../components/HeroNews';
@@ -9,10 +9,6 @@ import NewsCard from '../components/NewsCard';
 import { ChevronRight, Play, Mic, MessageSquare, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function Home() {
   const [articles, setArticles] = useState([]);

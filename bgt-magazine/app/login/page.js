@@ -1,15 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function LoginPage() {
   const router = useRouter();

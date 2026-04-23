@@ -1,13 +1,9 @@
 "use client";
 import { useEffect, useState, useMemo } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function GazetarDashboard() {
   const router = useRouter();

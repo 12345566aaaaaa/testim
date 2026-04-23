@@ -1,17 +1,13 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import NextImage from 'next/image';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import NewsCard from '../../components/NewsCard';
 import { Settings, LogOut, ChevronRight, Bookmark, Newspaper, LayoutGrid, User, ShieldCheck } from 'lucide-react';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function UserDashboard() {
   const [user, setUser] = useState(null);

@@ -2,14 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import NextImage from 'next/image';
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { Search, Sun, ChevronDown, Menu, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function Navbar({ onSearch }) {
   const [user, setUser] = useState(null);

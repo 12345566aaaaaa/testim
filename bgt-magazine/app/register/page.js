@@ -1,15 +1,11 @@
 "use client";
 import React, { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { ArrowLeft, Lock, Mail, User, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
