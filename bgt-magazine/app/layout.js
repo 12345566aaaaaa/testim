@@ -16,6 +16,8 @@ export const metadata = {
   description: "Portali juaj kryesor për lajme, ekonomi, sport dhe teknologji.",
 };
 
+import { Suspense } from 'react';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="sq" className="scroll-smooth">
@@ -23,7 +25,9 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/logo-bgt.png" />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-white text-[#0f172a] dark:bg-[#020617] dark:text-gray-100 transition-colors duration-300`}>
-        {children}
+        <Suspense fallback={<div className="h-screen flex items-center justify-center font-black uppercase animate-pulse">BGT</div>}>
+          {children}
+        </Suspense>
         
         <style dangerouslySetInnerHTML={{ __html: `
           :root {
