@@ -1,38 +1,78 @@
 # BGT Magazine
 
-Projekti i revistës BGT për studentë.
+Revista online "BGT" — projekt i studentëve për menaxhimin dhe publikimin e lajmeve.
 
-## Si të filloni (Udhëzime për Studentët)
+Ky repo përmban aplikacionin Next.js (app router) me Tailwind CSS, Supabase për back-end dhe një konfigurim të thjeshtë për përmbajtjet.
 
-Ndiqni hapat e mëposhtëm për të ekzekutuar projektin në kompjuterin tuaj pas shkarkimit (Clone).
+**Përmbajtja:**
 
-### 1. Klonimi i Projektit
+- Aplikacioni në folderin `app/`
+- Komponentet në `components/`
+- Klienti Supabase në `lib/supabase.js`
+
+## Sfidat kryesore
+- Menaxhim i përmbajtjes (Sanity / Supabase)
+- Autentikim përdoruesish (login / register)
+- Panel dashboard për përdoruesit e regjistruar
+
+## Si të startoni (zhvendosje e shpejtë)
+1. Klononi repo-në dhe hyni në folder:
+
 ```bash
-git clone https://github.com/endritmmenxhiqi/BGT-Magazine.git
-cd BGT-Magazine/bgt-magazine
+
+2. Instaloni varësitë:
+
+```npm install
+
+3. Konfiguroni variablat e mjedisit:
+
+- Kopjoni `.env.example` te `.env.local` dhe plotësoni vlerat e nevojshme (Supabase URL, Anon Key, etj.).
+- Në Windows (PowerShell): `cp .env.example .env.local` ose krijoni manualisht `.env.local`.
+
+Variabla tipike që mund t'ju duhen:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- (shtoni çfarëdo variabla shtesë që ka projekti juaj)
+
+4. Startoni mjedisin e zhvillimit:
+
+```bash
+
+Hapni: http://localhost:3000
+
+## Skriptet e dobishme
+
+- `npm run dev` — starton serverin në zhvillim
+- `npm run build` — ndërton për prodhim
+- `npm run start` — nis versionin e ndërtuar
+
+## Konfigurime shtesë
+- Supabase: sigurohuni që tabela dhe privilegjet të jenë vendosur sipas `supabase_tables.sql` në root.
+- Sanity: nëse përdoret, konfiguro `sanity/` sipas dokumentacionit të Sanity.
+
+## Rekomandime për deployment
+- Vercel: lidhni repo-në me Vercel dhe shtoni variablat e mjedisit në Settings → Environment Variables.
+- GitHub Actions / Other CI: sigurohuni që variablat e mjedisit të jenë të disponueshme në pipeline.
+
+## Kontribuoni
+- Bëni fork, krijoni branch, shtoni ndryshimet dhe dërgoni pull request.
+
+Shembull:
+
+```bash
+git checkout -b feature/emri-i-funksionit
+git add .
+git commit -m "feat: shtoj funksionalitet të ri"
+git push origin feature/emri-i-funksionit
 ```
 
-### 2. Instalimi i Paketave (Dependencies)
-Pas hyrjes në folderin `bgt-magazine`, ekzekutoni komandën:
-```bash
-npm install
-```
+## License
+- Shto një skedar `LICENSE` sipas nevojës (p.sh. MIT).
 
-### 3. Konfigurimi i Variablave të Mjedisit (.env)
-Pasi që fajlli `.env.local` nuk është në GitHub për arsye sigurie, ju duhet ta krijoni vetë:
+## Kontakt
 
-1. Kopjoni fajllin `.env.example` dhe emërojeni si `.env.local`:
-   - Në Windows (PowerShell): `cp .env.example .env.local`
-   - Ose krijoni një fajll të ri me emrin `.env.local` manualisht.
-2. Hapni `.env.local` dhe vendosni vlerat e kërkuara nga profesori (Supabase URL dhe Anon Key).
-
-### 4. Ekzekutimi i Projektit
-Pasi të keni instaluar paketat dhe konfiguruar `.env.local`, startoni serverin:
-```bash
-npm run dev
-```
-
-Projekti do të jetë i qasshëm në: [http://localhost:3000](http://localhost:3000)
+- Për pyetje ose ndihmë: kontaktoni autorin e repo-së ose mësuesin përgjegjës.
 
 ---
-**Shënim:** Sigurohuni që keni të instaluar [Node.js](https://nodejs.org/) në kompjuterin tuaj.
+
